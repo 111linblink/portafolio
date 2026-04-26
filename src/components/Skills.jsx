@@ -1,256 +1,322 @@
-import { useRef, useEffect, useState } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { useRef, useEffect, useState } from "react";
+import { motion, useInView } from "framer-motion";
 
-// Tech skills with emoji/text icons
+import {
+  FaReact,
+  FaNodeJs,
+  FaDocker,
+  FaAws,
+  FaPython,
+  FaJava,
+  FaGithub,
+  FaWordpress,
+  FaMicrosoft,
+  FaLinux
+} from "react-icons/fa";
+
+import {
+  SiJavascript,
+  SiMongodb,
+  SiMysql,
+  SiAngular,
+  SiPostgresql,
+  SiCplusplus,
+  SiUnity,
+  SiScrumalliance,
+  SiCisco,
+  SiHackerrank
+} from "react-icons/si";
+
 const skills = [
-  { name: 'React', color: '#61dafb', bg: '#e8f8fd' },
-  { name: 'Node.js', color: '#68a063', bg: '#e8f4e8' },
-  { name: 'JavaScript', color: '#f0db4f', bg: '#fefbe8' },
-  { name: 'MongoDB', color: '#47a248', bg: '#e8f4e8' },
-  { name: 'MySQL', color: '#4479a1', bg: '#e8f0f8' },
-  { name: 'Docker', color: '#2496ed', bg: '#e8f2fc' },
-  { name: 'AWS', color: '#ff9900', bg: '#fff4e8' },
-  { name: 'Angular', color: '#dd0031', bg: '#fce8eb' },
-  { name: 'Java', color: '#ed8b00', bg: '#fff4e8' },
-  { name: 'Python', color: '#3776ab', bg: '#e8f0f8' },
-  { name: 'PostgreSQL', color: '#336791', bg: '#e8f0f8' },
-  { name: 'GitHub', color: '#333', bg: '#f0f0f0' },
-  { name: 'C++', color: '#00599c', bg: '#e8f0f8' },
-  { name: 'Unity', color: '#222', bg: '#ebebeb' },
-  { name: 'WordPress', color: '#21759b', bg: '#e8f2f8' },
-  { name: 'Wix', color: '#faad4d', bg: '#fff4e8' },
-  { name: 'Scrum', color: '#009fdb', bg: '#e8f4fd' },
-  { name: 'Mendix', color: '#0595db', bg: '#e8f4fd' },
-]
+  { name: "React", icon: FaReact, color: "#61DAFB" },
+  { name: "Node", icon: FaNodeJs, color: "#68A063" },
+  { name: "JavaScript", icon: SiJavascript, color: "#F7DF1E" },
+  { name: "MongoDB", icon: SiMongodb, color: "#47A248" },
+  { name: "MySQL", icon: SiMysql, color: "#4479A1" },
+  { name: "Docker", icon: FaDocker, color: "#2496ED" },
+  { name: "AWS", icon: FaAws, color: "#FF9900" },
+  { name: "Angular", icon: SiAngular, color: "#DD0031" },
+  { name: "Java", icon: FaJava, color: "#ED8B00" },
+  { name: "Python", icon: FaPython, color: "#3776AB" },
+  { name: "PostgreSQL", icon: SiPostgresql, color: "#336791" },
+  { name: "GitHub", icon: FaGithub, color: "#222" },
+  { name: "C++", icon: SiCplusplus, color: "#00599C" },
+  { name: "Unity", icon: SiUnity, color: "#111" },
+  { name: "WordPress", icon: FaWordpress, color: "#21759B" },
+  { name: "Scrum", icon: SiScrumalliance, color: "#009FDB" },
+];
 
 const certifications = [
-  { title: 'IT Essentials', org: 'Cisco', icon: '💻' },
-  { title: 'CCNAv7', org: 'Cisco', icon: '🌐' },
-  { title: 'CCNA Switching & Routing', org: 'Cisco', icon: '🔌' },
-  { title: 'NDG Linux Essentials', org: 'Cisco', icon: '🐧' },
-  { title: 'React Basic', org: 'HackerRank', icon: '⚛️' },
-  { title: 'Problem Solving Basic', org: 'Logic', icon: '🧩' },
-  { title: 'Python Básico', org: 'Coding', icon: '🐍' },
-  { title: 'Intro a Ciberseguridad', org: 'Cisco', icon: '🛡️' },
-  { title: 'Scrum Study', org: 'Agile', icon: '🚀' },
-  { title: 'Mendix Certified', org: 'LowCode', icon: '🏗️' },
-  { title: 'Office 2019', org: 'Microsoft', icon: '📊' },
-  { title: 'Cloud Computing', org: 'Aviation', icon: '☁️' },
-]
+  { title: 'IT Essentials', org: 'Cisco', icon: SiCisco, color: '#1BA0D7' },
+  { title: 'CCNAv7', org: 'Cisco', icon: SiCisco, color: '#1BA0D7' },
+  { title: 'CCNA Switching & Routing', org: 'Cisco', icon: SiCisco, color: '#1BA0D7' },
+  { title: 'NDG Linux Essentials', org: 'NDG', icon: FaLinux, color: '#222' },
+  { title: 'React Basic', org: 'HackerRank', icon: SiHackerrank, color: '#00EA64' },
+  { title: 'Problem Solving Basic', org: 'HackerRank', icon: SiHackerrank, color: '#00EA64' },
+  { title: 'Python Básico', org: 'Coding', icon: FaPython, color: '#3776AB' },
+  { title: 'Intro a Ciberseguridad', org: 'Cisco', icon: SiCisco, color: '#1BA0D7' },
+  { title: 'Scrum Study', org: 'Agile', icon: SiScrumalliance, color: '#009FDB' },
+  { title: 'Mendix Certified', org: 'LowCode', icon: SiMongodb, color: '#0595DB' },
+  { title: 'Office 2019', org: 'Microsoft', icon: FaMicrosoft, color: '#F25022' },
+  { title: 'Cloud Computing', org: 'Aviation', icon: FaAws, color: '#FF9900' }
+];
 
-// Place skills in a sphere arrangement
 function getSpherePositions(count, radius) {
-  const positions = []
-  const phi = Math.PI * (3 - Math.sqrt(5)) // golden angle
+  let positions = [];
+  const phi = Math.PI * (3 - Math.sqrt(5));
   for (let i = 0; i < count; i++) {
-    const y = 1 - (i / (count - 1)) * 2
-    const r = Math.sqrt(1 - y * y)
-    const theta = phi * i
+    const y = 1 - (i / (count - 1)) * 2;
+    const r = Math.sqrt(1 - y * y);
+    const theta = phi * i;
     positions.push({
       x: Math.cos(theta) * r * radius,
       y: y * radius,
-      z: Math.sin(theta) * r * radius,
-    })
+      z: Math.sin(theta) * r * radius
+    });
   }
-  return positions
+  return positions;
 }
 
 export default function Skills() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
-  const [rotation, setRotation] = useState(0)
-  const animRef = useRef(null)
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  const [rotation, setRotation] = useState(0);
+  const [mouseRotation, setMouseRotation] = useState(0);
+  const [sphereSize, setSphereSize] = useState({ container: 650, radius: 260, iconSize: 42, boxSize: 82 });
+  const animRef = useRef();
+
+  // Ajuste responsivo del tamaño de la esfera
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 500) {
+        setSphereSize({ container: 320, radius: 130, iconSize: 24, boxSize: 50 });
+      } else if (width < 768) {
+        setSphereSize({ container: 450, radius: 180, iconSize: 32, boxSize: 65 });
+      } else {
+        setSphereSize({ container: 650, radius: 260, iconSize: 42, boxSize: 82 });
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
-    let start = null
+    let start = null;
     const animate = (ts) => {
-      if (!start) start = ts
-      setRotation(((ts - start) / 1000) * 25) // 25 deg/s
-      animRef.current = requestAnimationFrame(animate)
+      if (!start) start = ts;
+      setRotation(((ts - start) / 1000) * 18);
+      animRef.current = requestAnimationFrame(animate);
     }
-    animRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(animRef.current)
-  }, [])
+    animRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animRef.current);
+  }, []);
 
-  const positions = getSpherePositions(skills.length, 160)
-  const rad = (rotation * Math.PI) / 180
+  const positions = getSpherePositions(skills.length, sphereSize.radius);
+  const rad = ((rotation + mouseRotation) * Math.PI) / 180;
 
-  // Rotate around Y axis
   const rotated = positions.map(({ x, y, z }) => ({
     x: x * Math.cos(rad) + z * Math.sin(rad),
     y,
-    z: -x * Math.sin(rad) + z * Math.cos(rad),
-  }))
+    z: -x * Math.sin(rad) + z * Math.cos(rad)
+  }));
 
-  const softSkills = ['Liderazgo', 'Trabajo en equipo', 'Adaptabilidad', 'Empatía', 'Negociación']
+  const softSkills = ["Leadership", "Teamwork", "Adaptability", "Empathy", "Problem Solving"];
 
   return (
     <section
       id="skills"
       ref={ref}
       style={{
-        minHeight: '100vh',
-        padding: '6rem 2.5rem',
-        background: 'var(--paper)',
-        position: 'relative',
-        overflow: 'hidden',
+        minHeight: "100vh",
+        padding: "5rem 1rem",
+        background: "var(--paper)",
+        overflow: "hidden"
       }}
     >
+      <style>{`
+        .section-title {
+          text-align: center;
+          font-family: 'Caveat', cursive;
+          font-size: 3rem;
+          margin-bottom: 2rem;
+        }
+        .cert-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 20px;
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 0 10px;
+        }
+        @media (max-width: 600px) {
+          .section-title { font-size: 2.2rem; }
+          .cert-grid { grid-template-columns: 1fr; }
+        }
+      `}</style>
+
       <motion.h2
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.6 }}
         className="section-title"
       >
         Skills ⏾
       </motion.h2>
 
-      {/* 3D Sphere */}
       <motion.div
+        onMouseMove={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const center = rect.width / 2;
+          setMouseRotation(((x - center) / center) * 70);
+        }}
+        onMouseLeave={() => setMouseRotation(0)}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={inView ? { opacity: 1, scale: 1 } : {}}
-        transition={{ delay: 0.2, duration: 0.8 }}
         style={{
-          position: 'relative',
-          width: '380px',
-          height: '380px',
-          margin: '0 auto 4rem',
-          perspective: '800px',
+          position: "relative",
+          width: `${sphereSize.container}px`,
+          height: `${sphereSize.container}px`,
+          margin: "0 auto",
+          cursor: "default"
         }}
       >
         {rotated.map((pos, i) => {
-          const skill = skills[i]
-          // Normalize z for depth: z in [-160,160] -> scale/opacity
-          const scale = (pos.z + 160) / 320 * 0.5 + 0.6   // 0.6 – 1.1
-          const opacity = (pos.z + 160) / 320 * 0.6 + 0.35 // 0.35 – 0.95
-          const zIndex = Math.round(pos.z + 160)
+          const skill = skills[i];
+          const Icon = skill.icon;
+          const scale = (pos.z + sphereSize.radius) / (sphereSize.radius * 2) * 0.5 + 0.5;
+          const opacity = (pos.z + sphereSize.radius) / (sphereSize.radius * 2) * 0.7 + 0.3;
 
           return (
             <div
               key={i}
               style={{
-                position: 'absolute',
-                left: '50%',
-                top: '50%',
+                position: "absolute",
+                left: "50%",
+                top: "50%",
                 transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${-pos.y}px)) scale(${scale})`,
                 opacity,
-                zIndex,
-                transition: 'transform 0.05s linear',
+                zIndex: Math.round(pos.z + sphereSize.radius),
+                transition: "transform .05s linear"
               }}
             >
-              <div style={{
-                background: skill.bg,
-                border: `1.5px solid ${skill.color}40`,
-                borderRadius: '8px',
-                padding: '5px 10px',
-                fontFamily: 'DM Mono, monospace',
-                fontSize: '0.68rem',
-                color: skill.color,
-                fontWeight: 500,
-                whiteSpace: 'nowrap',
-                boxShadow: `0 2px 8px ${skill.color}20`,
-                letterSpacing: '0.03em',
-                userSelect: 'none',
+              <motion.div
+                whileHover={{ scale: 1.2, y: -5 }}
+                style={{
+                  width: `${sphereSize.boxSize}px`,
+                  height: `${sphereSize.boxSize}px`,
+                  borderRadius: "50%",
+                  background: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 8px 20px rgba(0,0,0,.08)",
+                  border: "1px solid rgba(0,0,0,.04)"
+                }}
+              >
+                <Icon size={sphereSize.iconSize} color={skill.color} />
+              </motion.div>
+              <p style={{
+                marginTop: "6px",
+                textAlign: "center",
+                fontSize: sphereSize.container < 500 ? "0.55rem" : "0.72rem",
+                fontFamily: "DM Mono, monospace",
+                color: "#7a6f66"
               }}>
                 {skill.name}
-              </div>
+              </p>
             </div>
-          )
+          );
         })}
       </motion.div>
 
-{/* Soft Skills */}
-      <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-        <p style={{ fontFamily: 'Caveat, cursive', fontSize: '1.8rem', color: '#d63384', marginBottom: '1.5rem' }}>
+      <div style={{ textAlign: "center", marginTop: "4rem" }}>
+        <p style={{ fontFamily: "Caveat,cursive", fontSize: "2rem", color: "#d76aa3", marginBottom: "1.5rem" }}>
           & soft skills too ✨
         </p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', justifyContent: 'center', maxWidth: '600px', margin: '0 auto' }}>
-          {softSkills.map((s, i) => (
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: "12px",
+          maxWidth: "700px",
+          margin: "0 auto",
+          padding: "0 1rem"
+        }}>
+          {softSkills.map((skill, i) => (
             <motion.span
               key={i}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={inView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ delay: 0.5 + i * 0.1 }}
+              transition={{ delay: 0.4 + i * 0.08 }}
+              whileHover={{ rotate: -2, y: -4 }}
               style={{
-                fontFamily: 'Caveat, cursive',
-                fontSize: '1.2rem',
-                color: '#e479b6',
-                background: '#fde8ee',
-                padding: '8px 22px',
-                borderRadius: '50px',
-                boxShadow: '2px 4px 0px rgba(0,0,0,0.1)',
-                display: 'inline-block'
+                padding: "8px 20px",
+                borderRadius: "999px",
+                background: "#fde8ef",
+                color: "#e479b6",
+                fontFamily: "Caveat,cursive",
+                fontSize: "1.1rem",
+                boxShadow: "2px 4px 0 rgba(0,0,0,.05)"
               }}
             >
-              {s}
+              {skill}
             </motion.span>
           ))}
         </div>
       </div>
 
-      {/* Certificaciones */}
-      <div style={{ marginTop: '8rem' }}>
-        <h3 style={{ 
-          fontFamily: 'Instrument Serif, serif', 
-          fontStyle: 'italic', 
-          fontSize: '2.5rem', 
+      <p style={{ marginTop: "3rem", textAlign: "center", fontFamily: "DM Mono, monospace", fontSize: ".7rem", opacity: .5 }}>
+        hover to rotate ✧
+      </p>
+
+      <div style={{ marginTop: "6rem" }}>
+        <h3 style={{
+          fontFamily: 'Instrument Serif, serif',
+          fontStyle: 'italic',
+          fontSize: '2.4rem',
           textAlign: 'center',
-          marginBottom: '4rem'
+          marginBottom: '3rem'
         }}>
           Certifications & Credentials
         </h3>
-        
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
-          gap: '30px', 
-          maxWidth: '1100px',
-          margin: '0 auto',
-          padding: '0 20px'
-        }}>
-          {certifications.map((cert, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3 + i * 0.05 }}
-              whileHover={{ y: -10, rotate: 1 }}
-              style={{
-                background: '#fff',
-                padding: '25px',
-                border: '1.5px solid #f0f0f0',
-                borderRadius: '20px',
-                textAlign: 'center',
-                position: 'relative',
-                boxShadow: '0 15px 35px rgba(0,0,0,0.05)',
-              }}
-            >
-              <div style={{ 
-                position: 'absolute', top: 0, left: 0, width: '8px', height: '100%', 
-                background: 'linear-gradient(to bottom, #ff85a1, #fbb1bd)' 
-              }} />
-              
-              <div style={{ fontSize: '2.2rem', marginBottom: '12px' }}>{cert.icon}</div>
-              <div style={{ 
-                fontFamily: 'DM Mono, monospace', 
-                fontSize: '0.8rem', 
-                fontWeight: 'bold',
-                letterSpacing: '1px'
-              }}>
-                {cert.title}
-              </div>
-              <div style={{ 
-                fontFamily: 'Caveat, cursive', 
-                fontSize: '1.1rem', 
-                color: '#aaa',
-                marginTop: '8px'
-              }}>
-                {cert.org}
-              </div>
-            </motion.div>
-          ))}
+
+        <div className="cert-grid">
+          {certifications.map((cert, i) => {
+            const CertIcon = cert.icon;
+            return (
+              <motion.div
+                key={i}
+                whileHover={{ y: -5, scale: 1.02 }}
+                style={{
+                  background: '#fff',
+                  padding: '24px',
+                  borderRadius: '20px',
+                  boxShadow: '0 10px 25px rgba(0,0,0,.05)',
+                  textAlign: 'center',
+                  position: 'relative'
+                }}
+              >
+                <div style={{
+                  position: 'absolute',
+                  left: 0, top: 0, width: '6px', height: '100%',
+                  background: 'linear-gradient(to bottom,#ff85a1,#fbb1bd)',
+                  borderRadius: '20px 0 0 20px'
+                }} />
+                <CertIcon size={38} color={cert.color} />
+                <div style={{ marginTop: '12px', fontFamily: 'DM Mono, monospace', fontSize: '.75rem', fontWeight: 'bold' }}>
+                  {cert.title}
+                </div>
+                <div style={{ fontFamily: 'Caveat,cursive', fontSize: '1.1rem', color: '#b58a9d', marginTop: '6px' }}>
+                  {cert.org}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
-  )
+  );
 }
