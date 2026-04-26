@@ -85,7 +85,6 @@ export default function Skills() {
   const [sphereSize, setSphereSize] = useState({ container: 650, radius: 260, iconSize: 42, boxSize: 82 });
   const animRef = useRef();
 
-  // Ajuste responsivo del tamaño de la esfera
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
@@ -133,7 +132,10 @@ export default function Skills() {
         minHeight: "100vh",
         padding: "5rem 1rem",
         background: "var(--paper)",
-        overflow: "hidden"
+        overflow: "hidden",
+        position: "relative",
+        isolation: "isolate", // Crea un contexto de z-index aislado para que nada salga de la sección
+        zIndex: 1
       }}
     >
       <style>{`
@@ -179,8 +181,9 @@ export default function Skills() {
           position: "relative",
           width: `${sphereSize.container}px`,
           height: `${sphereSize.container}px`,
-          margin: "0 auto",
-          cursor: "default"
+          margin: "2rem auto",
+          cursor: "default",
+          perspective: "1000px" // Mejora el efecto de profundidad
         }}
       >
         {rotated.map((pos, i) => {
@@ -196,10 +199,12 @@ export default function Skills() {
                 position: "absolute",
                 left: "50%",
                 top: "50%",
+                transformStyle: "preserve-3d", // Asegura que los hijos respeten el espacio 3D
                 transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${-pos.y}px)) scale(${scale})`,
                 opacity,
                 zIndex: Math.round(pos.z + sphereSize.radius),
-                transition: "transform .05s linear"
+                transition: "transform .05s linear",
+                pointerEvents: "none" // Evita que los divs invisibles bloqueen el scroll
               }}
             >
               <motion.div
@@ -213,7 +218,8 @@ export default function Skills() {
                   alignItems: "center",
                   justifyContent: "center",
                   boxShadow: "0 8px 20px rgba(0,0,0,.08)",
-                  border: "1px solid rgba(0,0,0,.04)"
+                  border: "1px solid rgba(0,0,0,.04)",
+                  pointerEvents: "auto" // Reactiva el hover solo en el círculo
                 }}
               >
                 <Icon size={sphereSize.iconSize} color={skill.color} />
