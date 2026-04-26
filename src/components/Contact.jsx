@@ -155,7 +155,7 @@ export default function Contact() {
           color: 'var(--text-light)',
         }}
       >
-        <p>made with 🌸 by Linette · {new Date().getFullYear()}</p>
+        <p>made by Linette 🌸 · {new Date().getFullYear()}</p>
       </motion.div>
     </section>
   )
