@@ -5,7 +5,7 @@ const experiences = [
   {
     company: 'Optimen',
     role: 'Software Developer',
-    period: 'Jan 2026 – Apr 2026',
+    period: 'Jan 2026 – Current',
     location: 'León, Gto',
     bullets: [
       'Function developer for problem solving.',
