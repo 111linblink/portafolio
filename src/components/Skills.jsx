@@ -89,7 +89,7 @@ export default function Skills() {
     const handleResize = () => {
       const width = window.innerWidth;
       if (width < 500) {
-        setSphereSize({ container: 320, radius: 130, iconSize: 24, boxSize: 50 });
+        setSphereSize({ container: 300, radius: 110, iconSize: 22, boxSize: 48 });
       } else if (width < 768) {
         setSphereSize({ container: 450, radius: 180, iconSize: 32, boxSize: 65 });
       } else {
@@ -132,9 +132,9 @@ export default function Skills() {
         minHeight: "100vh",
         padding: "5rem 1rem",
         background: "var(--paper)",
-        overflow: "hidden",
+        overflowX: "hidden", // Previene el scroll horizontal por desbordamiento de la esfera
         position: "relative",
-        isolation: "isolate", // Crea un contexto de z-index aislado para que nada salga de la sección
+        isolation: "isolate",
         zIndex: 1
       }}
     >
@@ -179,18 +179,20 @@ export default function Skills() {
         animate={inView ? { opacity: 1, scale: 1 } : {}}
         style={{
           position: "relative",
-          width: `${sphereSize.container}px`,
+          width: "100%",
+          maxWidth: `${sphereSize.container}px`,
           height: `${sphereSize.container}px`,
           margin: "2rem auto",
           cursor: "default",
-          perspective: "1000px" // Mejora el efecto de profundidad
+          perspective: "1000px",
+          touchAction: "pan-y" // CORRECCIÓN: Permite el scroll vertical en móviles sobre la esfera
         }}
       >
         {rotated.map((pos, i) => {
           const skill = skills[i];
           const Icon = skill.icon;
           const scale = (pos.z + sphereSize.radius) / (sphereSize.radius * 2) * 0.5 + 0.5;
-          const opacity = (pos.z + sphereSize.radius) / (sphereSize.radius * 2) * 0.7 + 0.3;
+          const opacity = (pos.z + sphereSize.radius) / (sphereSize.radius * 2) * 0.8 + 0.2;
 
           return (
             <div
@@ -199,12 +201,13 @@ export default function Skills() {
                 position: "absolute",
                 left: "50%",
                 top: "50%",
-                transformStyle: "preserve-3d", // Asegura que los hijos respeten el espacio 3D
-                transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${-pos.y}px)) scale(${scale})`,
-                opacity,
+                transformStyle: "preserve-3d",
+                // CORRECCIÓN: Usar translate3d mejora el rendimiento en móviles
+                transform: `translate3d(calc(-50% + ${pos.x}px), calc(-50% + ${-pos.y}px), ${pos.z}px) scale(${scale})`,
+                opacity: (window.innerWidth < 500 && opacity < 0.35) ? 0 : opacity, // Oculta elementos traseros en móvil para evitar ruido visual
                 zIndex: Math.round(pos.z + sphereSize.radius),
-                transition: "transform .05s linear",
-                pointerEvents: "none" // Evita que los divs invisibles bloqueen el scroll
+                transition: "transform .1s ease-out", 
+                pointerEvents: "none"
               }}
             >
               <motion.div
@@ -219,7 +222,7 @@ export default function Skills() {
                   justifyContent: "center",
                   boxShadow: "0 8px 20px rgba(0,0,0,.08)",
                   border: "1px solid rgba(0,0,0,.04)",
-                  pointerEvents: "auto" // Reactiva el hover solo en el círculo
+                  pointerEvents: "auto" 
                 }}
               >
                 <Icon size={sphereSize.iconSize} color={skill.color} />
@@ -227,9 +230,10 @@ export default function Skills() {
               <p style={{
                 marginTop: "6px",
                 textAlign: "center",
-                fontSize: sphereSize.container < 500 ? "0.55rem" : "0.72rem",
+                fontSize: sphereSize.container < 500 ? "0.6rem" : "0.72rem",
                 fontFamily: "DM Mono, monospace",
-                color: "#7a6f66"
+                color: "#7a6f66",
+                whiteSpace: "nowrap"
               }}>
                 {skill.name}
               </p>
@@ -275,7 +279,7 @@ export default function Skills() {
       </div>
 
       <p style={{ marginTop: "3rem", textAlign: "center", fontFamily: "DM Mono, monospace", fontSize: ".7rem", opacity: .5 }}>
-        hover to rotate ✧
+        {window.innerWidth < 768 ? "swipe to see more ✧" : "hover to rotate ✧"}
       </p>
 
       <div style={{ marginTop: "6rem" }}>
@@ -302,7 +306,8 @@ export default function Skills() {
                   borderRadius: '20px',
                   boxShadow: '0 10px 25px rgba(0,0,0,.05)',
                   textAlign: 'center',
-                  position: 'relative'
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
               >
                 <div style={{
